@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jeu de Calcul Mental</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background: #2d3a52;
+      color: #f1f1f1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #34495e;
+      border-radius: 15px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+      padding: 40px;
+      width: 90%;
+      max-width: 450px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 15px;
+      color: #e74c3c;
+    }
+
+    .timer {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #f39c12;
+      font-weight: bold;
+      display: none;
+    }
+
+    .question {
+      font-size: 22px;
+      margin: 20px 0;
+      color: #ecf0f1;
+    }
+
+    input {
+      padding: 12px;
+      font-size: 18px;
+      width: 100px;
+      text-align: center;
+      margin-bottom: 15px;
+      border: 2px solid #7f8c8d;
+      border-radius: 8px;
+    }
+
+    .btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #c0392b;
+    }
+
+    .score {
+      margin-top: 25px;
+      font-weight: bold;
+      font-size: 20px;
+      color: #2ecc71;
+    }
+
+    #restartBtn {
+      display: none;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Calcul Mental</h1>
+    <div class="timer" id="timer">Temps restant : 10s</div>
+    <button class="btn" onclick="startGame()" id="startBtn">Démarrer</button>
+
+    <div id="game" style="display: none;">
+      <div class="question" id="question"></div>
+      <input type="number" id="answerInput" placeholder="Réponse" />
+      <br>
+      <button class="btn" id="nextBtn" onclick="nextQuestion()">Suivant</button>
+      <div class="score" id="score"></div>
+      <button class="btn" onclick="restartGame()" id="restartBtn">Rejouer</button>
+    </div>
+  </div>
+
+  <script>
+    let num1, num2;
+    let score = 0;
+    let currentQuestion = 0;
+    let timer;
+    let timeLeft = 10;
+    const totalQuestions = 10;
+
+    const questionEl = document.getElementById("question");
+    const answerInput = document.getElementById("answerInput");
+    const scoreEl = document.getElementById("score");
+    const gameDiv = document.getElementById("game");
+    const restartBtn = document.getElementById("restartBtn");
+    const startBtn = document.getElementById("startBtn");
+    const timerEl = document.getElementById("timer");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function startGame() {
+      score = 0;
+      currentQuestion = 0;
+      startBtn.style.display = "none";
+      gameDiv.style.display = "block";
+      restartBtn.style.display = "none";
+      timerEl.style.display = "block";
+      questionEl.style.display = "block";
+      answerInput.style.display = "inline-block";
+      nextBtn.style.display = "inline-block";
+      scoreEl.textContent = "";
+      nextQuestion();
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      timeLeft = 10;
+      timerEl.textContent = `Temps restant : ${timeLeft}s`;
+      timer = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = `Temps restant : ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          nextQuestion();
+        }
+      }, 1000);
+    }
+
+    function generateQuestion() {
+      num1 = Math.floor(Math.random() * 20) + 1;
+      num2 = Math.floor(Math.random() * 20) + 1;
+      questionEl.textContent = `Combien font ${num1} + ${num2} ?`;
+    }
+
+    function nextQuestion() {
+      clearInterval(timer);
+      const userAnswer = parseInt(answerInput.value);
+      if (!isNaN(userAnswer) && userAnswer === num1 + num2) {
+        score++;
+      }
+      answerInput.value = "";
+      currentQuestion++;
+      if (currentQuestion < totalQuestions) {
+        generateQuestion();
+        startTimer();
+      } else {
+        endGame();
+      }
+    }
+
+    function endGame() {
+      clearInterval(timer);
+      timerEl.style.display = "none";
+      questionEl.style.display = "none";
+      answerInput.style.display = "none";
+      nextBtn.style.display = "none";
+      scoreEl.textContent = `Score : ${score} / ${totalQuestions}`;
+      restartBtn.style.display = "inline-block";
+    }
+
+    function restartGame() {
+      scoreEl.textContent = "";
+      answerInput.value = "";
+      startGame();
+    }
+  </script>
+</body>
+</html>
